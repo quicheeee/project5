@@ -657,31 +657,33 @@ public class auxDash extends JComponent implements Runnable{
                         //messages.add(m);
                         messageMenu(current, conversation);
                     }
-                    if(buttons.contains(button)){
+                    if(buttons.contains(button)) {
                         int i = buttons.indexOf(button);
                         Message temp = messages.get(i);
-                        String[] options = {"Edit Message", "Delete Message"};
-                        String choice = (String) JOptionPane.showInputDialog(null,
-                                "What would you like to do with this message", "Message Options",
-                                JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
-                        if(choice == null){
+                        if (temp.getSender().equals(current)) {
+                            String[] options = {"Edit Message", "Delete Message"};
+                            String choice = (String) JOptionPane.showInputDialog(null,
+                                    "What would you like to do with this message", "Message Options",
+                                    JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+                            if (choice == null) {
 
-                        } else if (choice.equals(options[0])){
-                            String newMsg = (String) JOptionPane.showInputDialog(null,
-                                    "What would you like this message to say?",
-                                    "Edit Message", JOptionPane.INFORMATION_MESSAGE);
-                            client.editMessage(conversation, temp, newMsg.trim(), current);
-                            //Message newMsg2 = new Message(conversation.getCustomer(), conversation.getSeller(), newMsg.trim(), false);
-                            //messages.set(messages.indexOf(temp), newMsg2);
-                            frame.dispose();
-                            messageMenu(current, conversation);
-                        } else if (choice.equals(options[1])){
-                            client.deleteMessage(conversation, temp, current);
-                            frame.dispose();
-                            //messages.remove(temp);
-                            messageMenu(current, conversation);
+                            } else if (choice.equals(options[0])) {
+                                String newMsg = (String) JOptionPane.showInputDialog(null,
+                                        "What would you like this message to say?",
+                                        "Edit Message", JOptionPane.INFORMATION_MESSAGE);
+                                client.editMessage(conversation, temp, newMsg.trim(), current);
+                                //Message newMsg2 = new Message(conversation.getCustomer(), conversation.getSeller(), newMsg.trim(), false);
+                                //messages.set(messages.indexOf(temp), newMsg2);
+                                frame.dispose();
+                                messageMenu(current, conversation);
+                            } else if (choice.equals(options[1])) {
+                                client.deleteMessage(conversation, temp, current);
+                                frame.dispose();
+                                //messages.remove(temp);
+                                messageMenu(current, conversation);
+                            }
+
                         }
-
                     }
                 }
             };
