@@ -224,14 +224,21 @@ public class auxDash extends JComponent implements Runnable{
                 JPanel[] p = {panelName, panel, panel1};
 
                 //Object[] o = {"Email", emailField, "Password", passwordField};
-                int a = JOptionPane.showConfirmDialog(null, p, "Create Account", JOptionPane.OK_CANCEL_OPTION);
-                if (a == JOptionPane.CANCEL_OPTION)
-                    return null;
 
-                String name = nameField.getText();
-                String email = emailField.getText();
-                String password = passwordField.getText();
-                String accountType = String.valueOf(jcb.getSelectedItem());
+                String name = "";
+                String email = "";
+                String password = "";
+                String accountType = "";
+                do{
+                    int a = JOptionPane.showConfirmDialog(null, p, "Create Account", JOptionPane.OK_CANCEL_OPTION);
+                    if (a == JOptionPane.CANCEL_OPTION)
+                        return null;
+                    name = nameField.getText();
+                    email = emailField.getText();
+                    password = passwordField.getText();
+                    accountType = String.valueOf(jcb.getSelectedItem());
+                } while(name.equals("") || email.equals("") || password.equals(""));
+
                 if(accountType.equals("Customer")){
                     user = client.newUser(name, email, password, "", 1);
                 }
@@ -414,6 +421,9 @@ public class auxDash extends JComponent implements Runnable{
             String select3 = (String) JOptionPane.showInputDialog(null,
                     String.format("Select which conversation you would like to export.%n%s", header), "Conversation Choices",
                     JOptionPane.PLAIN_MESSAGE, null, list, null);
+            if(select3 == null){
+                return;
+            }
             int indexInList = 0;
             for (int i = 0; i < list.length; i++) {
                 if (select3.equals(list[i])) {
@@ -475,6 +485,9 @@ public class auxDash extends JComponent implements Runnable{
             String select3 = (String) JOptionPane.showInputDialog(null,
                     String.format("Select which conversation you would like to import.%n%s", header), "Conversation Choices",
                     JOptionPane.PLAIN_MESSAGE, null, list, list[0]);
+            if(select3 == null){
+                return;
+            }
             int indexInList = 0;
             for (int i = 0; i < list.length; i++) {
                 if (select3.equals(list[i])) {
@@ -755,6 +768,9 @@ public class auxDash extends JComponent implements Runnable{
     private static void blockUser(User user){
         ArrayList<User> users;
         String search = (String) JOptionPane.showInputDialog(null, "Please search user you want to block:", "Block User", JOptionPane.INFORMATION_MESSAGE);
+        if(search == null){
+            return;
+        }
         if (user instanceof Customer)
             users = client.searchSellerByUser(search, user);
         else
@@ -768,6 +784,9 @@ public class auxDash extends JComponent implements Runnable{
             }
             String u = (String) JOptionPane.showInputDialog(null, "Please select a user to block", "Block User",
                     JOptionPane.INFORMATION_MESSAGE, null, userList, userList[0]);
+            if (u == null){
+                return;
+            }
             int choice = -1;
             for(int i = 0; i < userList.length; i++){
                 if(userList[i].equals(users.get(i).getName())){
@@ -791,9 +810,12 @@ public class auxDash extends JComponent implements Runnable{
 
     @Override
     public void run() {
+        User user = null;
+        while(user == null) {
         JOptionPane.showMessageDialog(null, "Welcome to the messaging application!",
                 "Messenger", JOptionPane.INFORMATION_MESSAGE);
-        User user = signInOrCreateAccount();
+        user = signInOrCreateAccount();
+        }
         if(user instanceof Customer){
             customerMenu(user);
         } else if(user instanceof Seller){
