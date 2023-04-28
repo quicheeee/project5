@@ -40,7 +40,7 @@ public class User implements Serializable {
         return email;
     }
 
-    //sets the email field to the inputed string
+    //sets the email field to the inputted string
     public void setEmail(String email) {
         this.email = email;
     }
@@ -87,7 +87,6 @@ public class User implements Serializable {
 
         filters.add(original);
         filters.add(replacement);
-        User.writeUsers();
     }
 
     public String applyFilters(String message) {
@@ -219,7 +218,10 @@ public class User implements Serializable {
 
     public static boolean addNewStore(Seller seller, String storeName) {
         try {
-            seller.addStore(storeName);
+            User savedUser = findUserWithEmail(seller.getEmail());
+            if (savedUser == null) return false;
+
+            ((Seller) savedUser).addStore(storeName);
             User.writeUsers();
         } catch (Exception e) {
             e.printStackTrace();
@@ -264,7 +266,7 @@ public class User implements Serializable {
                     while (true) {
                         User u = (User) ois.readObject();
                         users.add(u);
-                        System.out.println(u.toString());
+                       // System.out.println(u.toString());
                     }
 
                 } catch (EOFException ex) {
@@ -278,10 +280,13 @@ public class User implements Serializable {
         return User.allUsers;
     }
 
-    //this method blocks an inputed user
+    //this method blocks an inputted user
     public static boolean blockUser(User blocker, User blocked) {
         try {
-            blocker.block(blocked);
+            User savedUser = findUserWithEmail(blocker.getEmail());
+            if (savedUser == null) return false;
+
+            savedUser.block(blocked);
             writeUsers();
         } catch (Exception e) {
             e.printStackTrace();
@@ -308,7 +313,10 @@ public class User implements Serializable {
 
     public static boolean addFilterForUser(User user, String original, String replacement) {
         try {
-            user.addFilter(original, replacement);
+            User savedUser = findUserWithEmail(user.getEmail());
+            if (savedUser == null) return false;
+
+            savedUser.addFilter(original, replacement);
             User.writeUsers();
 
         } catch (Exception e) {
