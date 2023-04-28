@@ -82,8 +82,17 @@ public class auxDash extends JComponent implements Runnable {
 
             }
         };
-
-        JPanel panel = new JPanel(new GridLayout(7,1));
+        
+        JPanel panel;
+        
+        if (client.existsUnreadMessagesForUser(user)) {
+            panel = new JPanel(new GridLayout(8, 1));
+            JLabel newMessagesLabel = new JLabel("You have NEW MESSAGES");
+            newMessagesLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            panel.add(newMessagesLabel);
+        }
+        else
+            panel = new JPanel(new GridLayout(7,1));
 
         sendNewMsgButton.addActionListener(custMenuActionListener);
         viewConvosButton.addActionListener(custMenuActionListener);
@@ -161,7 +170,15 @@ public class auxDash extends JComponent implements Runnable {
             }
         };
 
-        JPanel panel = new JPanel(new GridLayout(7,1));
+        JPanel panel;
+        if (client.existsUnreadMessagesForUser(user)) {
+            panel = new JPanel(new GridLayout(8, 1));
+            JLabel newMessagesLabel = new JLabel("You have NEW MESSAGES");
+            newMessagesLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            panel.add(newMessagesLabel);
+        }
+        else
+            panel = new JPanel(new GridLayout(7,1));
 
         sendNewMsgButton.addActionListener(sellMenuActionListener);
         viewConvosButton.addActionListener(sellMenuActionListener);
