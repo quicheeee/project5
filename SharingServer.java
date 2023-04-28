@@ -46,10 +46,15 @@ public class SharingServer extends Thread {
                         break;
                     }
                 }
+                
+                out.reset();
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+        	
+           if (!e.getMessage().equals("Connection reset")) 
+        	   e.printStackTrace();
+           
         }
     }
 
