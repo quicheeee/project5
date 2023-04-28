@@ -12,8 +12,6 @@ public class SharingClient {
     private ObjectInputStream in = null;
     private ObjectOutputStream out = null;
 
-    User loggedUser;
-
     public SharingClient() {
     }
 
@@ -40,25 +38,29 @@ public class SharingClient {
     }
 
     public User signIn(String email, String password) {
-        try {
+    	try {
+    		
+    		User tempUser = null;
+        	
             out.writeObject("User.signIn");
             out.writeObject(email);
             out.writeObject(password);
             out.flush();
-            loggedUser = (User) in.readObject();
+            tempUser = (User) in.readObject();
+            
+            return tempUser;
 
         } catch (Exception e) {
             e.printStackTrace();
-            loggedUser = null;
+            return null;
         }
-        return loggedUser;
     }
 
-    public ArrayList<User> searchSellerByUser(String search) {
+    public ArrayList<User> searchSellerByUser(String search, User user) {
         try {
             out.writeObject("User.searchSellerByUser");
             out.writeObject(search);
-            out.writeObject(this.loggedUser);
+            out.writeObject(user);
             out.flush();
 
             ArrayList<User> temp = (ArrayList<User>) in.readObject();
@@ -70,11 +72,11 @@ public class SharingClient {
         }
     }
 
-    public ArrayList<User> searchCustomerByUser(String search) {
+    public ArrayList<User> searchCustomerByUser(String search, User user) {
         try {
             out.writeObject("User.searchCustomerByUser");
             out.writeObject(search);
-            out.writeObject(this.loggedUser);
+            out.writeObject(user);
             out.flush();
 
             ArrayList<User> temp = (ArrayList<User>) in.readObject();
@@ -86,10 +88,10 @@ public class SharingClient {
         }
     }
 
-    public ArrayList<User> getCustomersByUser() {
+    public ArrayList<User> getCustomersByUser(User user) {
         try {
             out.writeObject("User.getCustomersByUser");
-            out.writeObject(this.loggedUser);
+            out.writeObject(user);
             out.flush();
 
             ArrayList<User> temp = (ArrayList<User>) in.readObject();
@@ -283,7 +285,20 @@ public class SharingClient {
     	
     }
     
-    
+    public ArrayList<Store> getAllStoresForUser(User u) {
+    	try {
+    		out.writeObject("Store.getAllStoresForUser");
+    		out.writeObject(u);
+    		
+    		ArrayList<Store> temp = (ArrayList<Store>) in.readObject();
+    		return temp;
+    		
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    		return null;
+    	}
+    	
+    }
 
     public void stopConnection() {
         try {
@@ -296,6 +311,8 @@ public class SharingClient {
             e.printStackTrace();
         }
     }
+
+/* USED FOR TESTING
 
     public static void main(String[] args) {
         SharingClient client = new SharingClient();
@@ -325,7 +342,8 @@ public class SharingClient {
                 null, options, options[0]);
 
         client.stopConnection();
-    }
+    }    
+ 
 
     public boolean signInTest() {
         String userID;
