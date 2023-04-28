@@ -462,7 +462,7 @@ public class auxDash extends JComponent implements Runnable {
             if (message == null) {
                 JOptionPane.showMessageDialog(null, "File could not be read");
             } else {
-                Messenger.addMessageToConversation(convs.get(conversationIndex), user, message, false);
+                client.addMessageToConversation(convs.get(conversationIndex), user, message, false);
                 JOptionPane.showMessageDialog(null, "Your message has been imported");
             }
         }
@@ -499,7 +499,10 @@ public class auxDash extends JComponent implements Runnable {
             if (replacementWord.equals("")) {
                 replacementWord = "*****";
             }
+            
             client.addFilterForUser(u, filterWord, replacementWord);
+            u.addFilter(filterWord, replacementWord);
+            
             JOptionPane.showMessageDialog(null, "Filter has been added");
         }
     }
@@ -562,7 +565,8 @@ public class auxDash extends JComponent implements Runnable {
         frame = new JFrame(String.format("Conversation between %s and %s", conversation.getCustomer().getName(), conversation.getSeller().getName()));
         Container content = frame.getContentPane();
         frame.setLocationRelativeTo(null);
-        frame.setLocation(1000,-1100);
+        // frame.setLocation(1000,-1100);
+        frame.setSize(1000, 1000);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setVisible(true);
         JPanel panel = new JPanel(new GridLayout(messages.size() + 1, 1));
@@ -614,7 +618,7 @@ public class auxDash extends JComponent implements Runnable {
                     if (button.equals(send)) {
                         frame.dispose();
                         String text = newMessage.getText();
-                        Messenger.sendNewMessage(current, conversation.getSeller(), text, false,
+                        client.sendNewMessage(current, conversation.getSeller(), text, false,
                                 (Customer) conversation.getCustomer(), conversation.getStore());
                         Message m = new Message(conversation.getCustomer(), conversation.getSeller(), text, false);
                         messages.add(m);
@@ -633,13 +637,13 @@ public class auxDash extends JComponent implements Runnable {
                             String newMsg = (String) JOptionPane.showInputDialog(null,
                                     "What would you like this message to say?",
                                     "Edit Message", JOptionPane.INFORMATION_MESSAGE);
-                            Messenger.editMessage(conversation, temp, newMsg.trim(), current);
+                            client.editMessage(conversation, temp, newMsg.trim(), current);
                             Message newMsg2 = new Message(conversation.getCustomer(), conversation.getSeller(), newMsg.trim(), false);
                             messages.set(messages.indexOf(temp), newMsg2);
                             frame.dispose();
                             messageMenu(current, conversation, messages);
                         } else if (choice.equals(options[1])){
-                            Messenger.deleteMessage(conversation, temp, current);
+                            client.deleteMessage(conversation, temp, current);
                             frame.dispose();
                             messages.remove(temp);
                             messageMenu(current, conversation, messages);
