@@ -10,17 +10,16 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.io.*;
 
-public class auxDash extends JComponent implements Runnable {
-	
-	private static SharingClient client;
+public class auxDash extends JComponent implements Runnable{
+    private static SharingClient client;
+    private static JLabel newMessagesLabel;
+    private static JFrame commonFrame;
 
     public static void main(String[] args) {
-    	
-    	client = new SharingClient();
-    	
+        client = new SharingClient();
         if (!client.startConnection())
             return;
-    	
+
         SwingUtilities.invokeLater(new auxDash());
     }
 
@@ -45,29 +44,29 @@ public class auxDash extends JComponent implements Runnable {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (e.getSource() == sendNewMsgButton) {
-                    frame.dispose();
+                    //frame.dispose();
                     sendNewMailCustomer(user);
-                    customerMenu(user);
+                    //customerMenu(user);
                 }
                 if (e.getSource() == viewConvosButton) {
-                    frame.dispose();
+                    //frame.dispose();
                     viewConversations(user);
-                    customerMenu(user);
+                    //customerMenu(user);
                 }
                 if (e.getSource() == blockUserButton) {
-                    frame.dispose();
+                    //frame.dispose();
                     blockUser(user);
-                    customerMenu(user);
+                    //customerMenu(user);
                 }
                 if (e.getSource() == exportConvoButton) {
-                    frame.dispose();
+                    //frame.dispose();
                     exportConversation(user);
-                    customerMenu(user);
+                    //customerMenu(user);
                 }
                 if (e.getSource() == importConvoButton) {
-                    frame.dispose();
+                    //frame.dispose();
                     importConversation(user);
-                    customerMenu(user);
+                    //customerMenu(user);
                 }
                 if (e.getSource() == deleteAccountButton) {
                     frame.dispose();
@@ -75,25 +74,20 @@ public class auxDash extends JComponent implements Runnable {
                     SwingUtilities.invokeLater(new auxDash());
                 }
                 if (e.getSource() == addFiltersButton) {
-                    frame.dispose();
+                    //frame.dispose();
                     addFilters(user);
-                    customerMenu(user);
+                    //customerMenu(user);
                 }
-
+                refreshNewMessageLabel(user);
             }
         };
-        
-        JPanel panel;
-        
-        if (client.existsUnreadMessagesForUser(user)) {
-            panel = new JPanel(new GridLayout(8, 1));
-            JLabel newMessagesLabel = new JLabel("You have NEW MESSAGES");
-            newMessagesLabel.setHorizontalAlignment(SwingConstants.CENTER);
-            panel.add(newMessagesLabel);
-        }
-        else
-            panel = new JPanel(new GridLayout(7,1));
 
+        newMessagesLabel = new JLabel();
+        newMessagesLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        refreshNewMessageLabel(user);
+
+        JPanel panel = new JPanel(new GridLayout(8, 1));
+        panel.add(newMessagesLabel);
         sendNewMsgButton.addActionListener(custMenuActionListener);
         viewConvosButton.addActionListener(custMenuActionListener);
         blockUserButton.addActionListener(custMenuActionListener);
@@ -109,6 +103,8 @@ public class auxDash extends JComponent implements Runnable {
         panel.add(deleteAccountButton);
         panel.add(addFiltersButton);
         content.add(panel);
+
+        commonFrame = frame;
     }
 
     public static void sellerMenu(User user){
@@ -132,29 +128,29 @@ public class auxDash extends JComponent implements Runnable {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (e.getSource() == sendNewMsgButton) {
-                    frame.dispose();
+                    //frame.dispose();
                     sendNewMailSeller(user);
-                    sellerMenu(user);
+                    //sellerMenu(user);
                 }
                 if (e.getSource() == viewConvosButton) {
-                    frame.dispose();
+                    //frame.dispose();
                     viewConversations(user);
-                    sellerMenu(user);
+                    //sellerMenu(user);
                 }
                 if (e.getSource() == blockUserButton) {
-                    frame.dispose();
+                    //frame.dispose();
                     blockUser(user);
-                    sellerMenu(user);
+                    //sellerMenu(user);
                 }
                 if (e.getSource() == exportConvoButton) {
-                    frame.dispose();
+                    //frame.dispose();
                     exportConversation(user);
-                    sellerMenu(user);
+                    //sellerMenu(user);
                 }
                 if (e.getSource() == importConvoButton) {
-                    frame.dispose();
+                    //frame.dispose();
                     importConversation(user);
-                    sellerMenu(user);
+                    //sellerMenu(user);
                 }
                 if (e.getSource() == deleteAccountButton) {
                     frame.dispose();
@@ -162,24 +158,20 @@ public class auxDash extends JComponent implements Runnable {
                     SwingUtilities.invokeLater(new auxDash());
                 }
                 if (e.getSource() == addFiltersButton) {
-                    frame.dispose();
+                    //frame.dispose();
                     addFilters(user);
-                    sellerMenu(user);
+                    //sellerMenu(user);
                 }
 
             }
         };
 
-        JPanel panel;
-        if (client.existsUnreadMessagesForUser(user)) {
-            panel = new JPanel(new GridLayout(8, 1));
-            JLabel newMessagesLabel = new JLabel("You have NEW MESSAGES");
-            newMessagesLabel.setHorizontalAlignment(SwingConstants.CENTER);
-            panel.add(newMessagesLabel);
-        }
-        else
-            panel = new JPanel(new GridLayout(7,1));
+        newMessagesLabel = new JLabel();
+        newMessagesLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        refreshNewMessageLabel(user);
 
+        JPanel panel = new JPanel(new GridLayout(8, 1));
+        panel.add(newMessagesLabel);
         sendNewMsgButton.addActionListener(sellMenuActionListener);
         viewConvosButton.addActionListener(sellMenuActionListener);
         blockUserButton.addActionListener(sellMenuActionListener);
@@ -195,15 +187,19 @@ public class auxDash extends JComponent implements Runnable {
         panel.add(deleteAccountButton);
         panel.add(addFiltersButton);
         content.add(panel);
+
+        commonFrame = frame;
     }
 
-   private static User signInOrCreateAccount(){
+    private static User signInOrCreateAccount(){
         boolean invalidinput = true;
         User user = null;
         while (invalidinput) {
             String[] createOrSignIn = {"Create an Account", "Sign in to an Account"};
             String Select1 = (String) JOptionPane.showInputDialog(null, "Select what to do next",
                     "Messenger", JOptionPane.PLAIN_MESSAGE, null, createOrSignIn,null);
+            if (Select1 == null) return null;
+
             if(Select1.equals(createOrSignIn[0])){
                 JTextField nameField = new JTextField(10);
                 JTextField emailField = new JTextField(10);
@@ -229,6 +225,9 @@ public class auxDash extends JComponent implements Runnable {
 
                 //Object[] o = {"Email", emailField, "Password", passwordField};
                 int a = JOptionPane.showConfirmDialog(null, p, "Create Account", JOptionPane.OK_CANCEL_OPTION);
+                if (a == JOptionPane.CANCEL_OPTION)
+                    return null;
+
                 String name = nameField.getText();
                 String email = emailField.getText();
                 String password = passwordField.getText();
@@ -238,8 +237,11 @@ public class auxDash extends JComponent implements Runnable {
                 }
                 if(accountType.equals("Seller")){
                     String storeName = (String) JOptionPane.showInputDialog(null, "What would you like your first store to be named?");
+                    if (storeName == null) return null;
+
                     while (storeName.trim().equals("")) {
                         storeName = (String) JOptionPane.showInputDialog(null, "Please enter a valid store name.", "Error", JOptionPane.WARNING_MESSAGE);
+                        if (storeName == null) return null;
                     }
                     try {
                         user = client.newUser(name, email, password, storeName, 2);
@@ -251,7 +253,10 @@ public class auxDash extends JComponent implements Runnable {
                 JTextField email = new JTextField();
                 JTextField password = new JTextField();
                 Object [] options = {"Email", email, "Password", password};
-                JOptionPane.showConfirmDialog(null, options, "Log In", JOptionPane.OK_CANCEL_OPTION);
+                int res = JOptionPane.showConfirmDialog(null, options, "Log In", JOptionPane.OK_CANCEL_OPTION);
+                if (res == JOptionPane.CANCEL_OPTION)
+                    return null;
+
                 user = client.signIn(email.getText(), password.getText());
                 if(user == null){
                     JOptionPane.showMessageDialog(null, "Incorrect Login Information", "Error", JOptionPane.WARNING_MESSAGE);
@@ -261,10 +266,9 @@ public class auxDash extends JComponent implements Runnable {
                 }
             }
         }
-        
         return user;
     }
-   
+
     public static void deleteAccount(User user) {
 
         int de = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete your account?");
@@ -281,6 +285,8 @@ public class auxDash extends JComponent implements Runnable {
         String select2 = (String) JOptionPane.showInputDialog(null,
                 "Select what to do next", "Messenger", JOptionPane.PLAIN_MESSAGE,
                 null, selectStoreOrSearchSeller,null);
+        if (select2 == null) return;
+
         if(select2.equals(selectStoreOrSearchSeller[0])){
             ArrayList<Store> stores = client.getAllStoresForUser(user);
             chooseStoreToMail(user, stores, null);
@@ -288,6 +294,8 @@ public class auxDash extends JComponent implements Runnable {
             String sellerSearch = (String) JOptionPane.showInputDialog(null,
                     "Please enter seller you are searching for:", "Seller Search",
                     JOptionPane.PLAIN_MESSAGE);
+            if (sellerSearch == null) return;
+
             ArrayList<User> users = client.searchSellerByUser(sellerSearch, user);
             if (users.size() == 0) {
                 JOptionPane.showMessageDialog(null, "No sellers match", "Error", JOptionPane.WARNING_MESSAGE);
@@ -299,6 +307,8 @@ public class auxDash extends JComponent implements Runnable {
                 String select3 = (String) JOptionPane.showInputDialog(null,
                         "Select which seller you would like to message.", "Seller Choices",
                         JOptionPane.PLAIN_MESSAGE, null, userOptions, null);
+                if (select3 == null) return;
+
                 int num = -1;
                 for(int i = 0; i < userOptions.length; i++){
                     if(userOptions[i].equals(select3)){
@@ -307,7 +317,6 @@ public class auxDash extends JComponent implements Runnable {
                 }
                 ArrayList<Store> stores = ((Seller) users.get(num)).getListOfStores();
                 chooseStoreToMail(user, stores, null);
-
             }
 
         } else {
@@ -485,6 +494,7 @@ public class auxDash extends JComponent implements Runnable {
         }
 
     }
+
     private static String readFile(String fileName) {
         try {
             BufferedReader bfr = new BufferedReader(new FileReader(fileName));
@@ -510,16 +520,17 @@ public class auxDash extends JComponent implements Runnable {
         String[] op1 = {"Add a new filter", "Go back"};
         String select = (String) JOptionPane.showInputDialog(null, "Select what to do next",
                 "Messenger", JOptionPane.PLAIN_MESSAGE, null, op1, null);
+        if (select == null) return;
+
         if (select.equals("Add a new filter")) {
             String filterWord = (String) JOptionPane.showInputDialog("Enter what you want to filter", "");
             String replacementWord = (String) JOptionPane.showInputDialog("Enter the replacement word", "");
             if (replacementWord.equals("")) {
                 replacementWord = "*****";
             }
-            
             client.addFilterForUser(u, filterWord, replacementWord);
             u.addFilter(filterWord, replacementWord);
-            
+
             JOptionPane.showMessageDialog(null, "Filter has been added");
         }
     }
@@ -535,6 +546,8 @@ public class auxDash extends JComponent implements Runnable {
             String select3 = (String) JOptionPane.showInputDialog(null,
                     "Select which store you would like to message with.", "Store Choices",
                     JOptionPane.PLAIN_MESSAGE, null, storeOptions, null);
+            if (select3 == null) return;
+
             int num = -1;
             for(int i = 0; i < storeOptions.length; i++){
                 if(storeOptions[i].equals(select3)){
@@ -543,6 +556,7 @@ public class auxDash extends JComponent implements Runnable {
             }
             String message = JOptionPane.showInputDialog(null,
                     "What message would you like to send?", "New Message", JOptionPane.OK_OPTION);
+            if (message == null) return;
 
             if (user instanceof Customer)
                 client.sendNewMessage(user, stores.get(num).getSeller(), message, false,
@@ -569,31 +583,32 @@ public class auxDash extends JComponent implements Runnable {
                     continue;
                 } else {
                     //System.out.println(convs.get(i-1).getMessageString());
-                    ArrayList<Message> temp = client.getMessagesForUser(convs.get(i), u);
-                    messageMenu(u, convs.get(i), temp);
+                    //ArrayList<Message> temp = client.getMessagesForUser(convs.get(i), u);
+                    messageMenu(u, convs.get(i));
                     break;
                 }
             }
         }
     }
 
-    private static void messageMenu(User current, Conversation conversation, ArrayList<Message> messages) {
-        JFrame frame;
-        frame = new JFrame(String.format("Conversation between %s and %s", conversation.getCustomer().getName(), conversation.getSeller().getName()));
+    private static void messageMenu(User current, Conversation conversation) {
+        ArrayList<Message> messages = client.getMessagesForUser(conversation, current);
+
+        JDialog frame;
+        frame = new JDialog(commonFrame, true);
+        frame.setTitle(String.format("Conversation between %s and %s", conversation.getCustomer().getName(), conversation.getSeller().getName()));
+
         Container content = frame.getContentPane();
-        frame.setLocationRelativeTo(null);
-        // frame.setLocation(1000,-1100);
-        frame.setSize(1000, 1000);
+        //frame.setLocation(1000,-1100);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setVisible(true);
         JPanel panel = new JPanel(new GridLayout(messages.size() + 1, 1));
-        int count = 100;
+        int count = 50;
         if (messages.size() == 0)
             JOptionPane.showMessageDialog(null, "There are no messages to view", "Error", JOptionPane.WARNING_MESSAGE);
         else {
             ArrayList<JButton> buttons = new ArrayList<JButton>(messages.size());
             for (int i = 0; i < messages.size(); i++) {
-                count += 100;
+                count += 50;
                 String temp = current.applyFilters(messages.get(i).getMessage());
                 if(messages.get(i).getSender().equals(current)){
                     JPanel message = new JPanel();
@@ -635,11 +650,12 @@ public class auxDash extends JComponent implements Runnable {
                     if (button.equals(send)) {
                         frame.dispose();
                         String text = newMessage.getText();
-                        client.sendNewMessage(current, conversation.getSeller(), text, false,
-                                (Customer) conversation.getCustomer(), conversation.getStore());
-                        Message m = new Message(conversation.getCustomer(), conversation.getSeller(), text, false);
-                        messages.add(m);
-                        messageMenu(current, conversation, messages);
+                        client.addMessageToConversation(conversation, current, text, false);
+                        //client.sendNewMessage(current, conversation.getSeller(), text, false,
+                        //        (Customer) conversation.getCustomer(), conversation.getStore());
+                        //Message m = new Message(conversation.getCustomer(), conversation.getSeller(), text, false);
+                        //messages.add(m);
+                        messageMenu(current, conversation);
                     }
                     if(buttons.contains(button)){
                         int i = buttons.indexOf(button);
@@ -655,15 +671,15 @@ public class auxDash extends JComponent implements Runnable {
                                     "What would you like this message to say?",
                                     "Edit Message", JOptionPane.INFORMATION_MESSAGE);
                             client.editMessage(conversation, temp, newMsg.trim(), current);
-                            Message newMsg2 = new Message(conversation.getCustomer(), conversation.getSeller(), newMsg.trim(), false);
-                            messages.set(messages.indexOf(temp), newMsg2);
+                            //Message newMsg2 = new Message(conversation.getCustomer(), conversation.getSeller(), newMsg.trim(), false);
+                            //messages.set(messages.indexOf(temp), newMsg2);
                             frame.dispose();
-                            messageMenu(current, conversation, messages);
+                            messageMenu(current, conversation);
                         } else if (choice.equals(options[1])){
                             client.deleteMessage(conversation, temp, current);
                             frame.dispose();
-                            messages.remove(temp);
-                            messageMenu(current, conversation, messages);
+                            //messages.remove(temp);
+                            messageMenu(current, conversation);
                         }
 
                     }
@@ -679,31 +695,55 @@ public class auxDash extends JComponent implements Runnable {
             panel2.add(send);
             panel.add(panel2);
         }
-        frame.setSize(200, count);
         content.add(panel);
+        //frame.setSize(300, count);
+        frame.pack();
+        frame.setLocationRelativeTo(commonFrame);
+        frame.setVisible(true);
     }
 
     private static int printConversationList(ArrayList<Conversation> conversations, User user){
         String header = String.format("%30s %30s %30s %20s\n", "Customer", "Seller", "Store", "New");
-        String [] list = new String[conversations.size()];
+        ArrayList<String> list = new ArrayList<String>();
+        boolean sentinel;
+       
+        
+        ArrayList<User> blocked = user.getBlockedUsers();
 
         for (int i = 0; i < conversations.size(); i++) {
-            list[i] = String.format (" %30s %30s %30s %3s\n", conversations.get(i).getCustomer().getName(),
-                    conversations.get(i).getSeller().getName(), conversations.get(i).getStore().getStoreName(),
-                    conversations.get(i).hasUserRead(user) ? "N" : "Y");
+        	
+        	sentinel = true;
+        	String currCust = conversations.get(i).getCustomer().getName();
+        	String currSell = conversations.get(i).getSeller().getName();
+        	
+        	
+        	for(int j = 0; j < blocked.size(); j ++) {
+        		
+        		if (currCust.equals(blocked.get(j).getName()) || currSell.equals(blocked.get(j).getName()))
+        			sentinel = false;
+        	}
+        	
+        	if (sentinel) {
+        		list.add(String.format (" %30s %30s %30s %3s\n", conversations.get(i).getCustomer().getName(),
+        				conversations.get(i).getSeller().getName(), conversations.get(i).getStore().getStoreName(),
+        				conversations.get(i).hasUserRead(user) ? "N" : "Y"));
+        	}
 
         }
+        
+        String finalList[] = list.toArray(new String[0]);
+        
         String select3 = (String) JOptionPane.showInputDialog(null,
                 String.format("Select which conversation you would like to access.%n%s", header), "Conversation Choices",
-                JOptionPane.PLAIN_MESSAGE, null, list, null);
+                JOptionPane.PLAIN_MESSAGE, null, finalList, null);
 
         if(select3 == null){
-            customerMenu(user);
+            //customerMenu(user);
             return -2;
         }
 
-        for(int i = 0; i < list.length; i++) {
-            if(list[i].equals(select3)){
+        for(int i = 0; i < list.size(); i++) {
+            if(list.get(i).equals(select3)){
                 return i;
             }
         }
@@ -733,8 +773,18 @@ public class auxDash extends JComponent implements Runnable {
                 }
             }
             client.blockUser(user, users.get(choice));
+            //user.blockUser(user, users.get(choice));
+            
             JOptionPane.showMessageDialog(null, "Block set!", "Block User", JOptionPane.INFORMATION_MESSAGE);
         }
+    }
+
+    private static void refreshNewMessageLabel(User user) {
+        if (client.existsUnreadMessagesForUser(user))
+            newMessagesLabel.setText("<html><center>" + newMessagesLabel.getText()
+                    + "<br>You have NEW MESSAGES</center></html>");
+        else
+            newMessagesLabel.setText("Welcome " + user.getName());
     }
 
     @Override
