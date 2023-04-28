@@ -4,8 +4,6 @@ import javax.swing.*;
 import java.net.*;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 
 public class SharingClient {
     private Socket socket = null;
@@ -22,7 +20,7 @@ public class SharingClient {
 
         try {
             socket = new Socket(hostName, port);
-            JOptionPane.showMessageDialog(null, "Connection Established!", "Connection Established", JOptionPane.INFORMATION_MESSAGE);
+            //JOptionPane.showMessageDialog(null, "Connection Established!", "Connection Established", JOptionPane.INFORMATION_MESSAGE);
 
             out = new ObjectOutputStream(socket.getOutputStream());
             out.flush();
@@ -37,23 +35,20 @@ public class SharingClient {
         }
     }
 
-    public User signIn(String email, String password) {
-    	try {
-    		
-    		User tempUser = null;
-        	
+    public User signIn(String userID, String password) {
+        User loggedUser;
+        try {
             out.writeObject("User.signIn");
-            out.writeObject(email);
+            out.writeObject(userID);
             out.writeObject(password);
             out.flush();
-            tempUser = (User) in.readObject();
-            
-            return tempUser;
+            loggedUser = (User) in.readObject();
 
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            loggedUser = null;
         }
+        return loggedUser;
     }
 
     public ArrayList<User> searchSellerByUser(String search, User user) {
@@ -189,6 +184,21 @@ public class SharingClient {
         }
     }
 
+    public ArrayList<Store> getAllStoresForUser (User user) {
+        try {
+            out.writeObject("Store.getAllStoresForUser");
+            out.writeObject(user);
+            out.flush();
+
+            ArrayList<Store> temp = (ArrayList<Store>) in.readObject();
+            return temp;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public boolean sendNewMessage(User sender, User receiver, String message, Boolean disappearing,
                                       Customer customer, Store store) {
         try {
@@ -209,45 +219,59 @@ public class SharingClient {
             return false;
         }
     }
-    
-    public ArrayList<Conversation> getConversationsForUser(User u) {
-    	
-    	 try {
-             out.writeObject("Messenger.getConversationsForUser");
-             out.writeObject(u);
-             out.flush();
 
-             ArrayList<Conversation> temp = (ArrayList<Conversation>) in.readObject();
-             return temp;
+    public ArrayList<Conversation> getConversationsForUser(User user) {
+        try {
+            out.writeObject("Messenger.getConversationsForUser");
+            out.writeObject(user);
+            out.flush();
 
-         } catch (Exception e) {
-             e.printStackTrace();
-             return null;
-         }	
-    	
+            ArrayList<Conversation> temp = (ArrayList<Conversation>) in.readObject();
+            return temp;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
-    
+
+    public boolean addMessageToConversation(Conversation conversation, User sender, String message,
+                                                boolean disappearing) {
+        try {
+            out.writeObject("Messenger.addMessageToConversation");
+            out.writeObject(conversation);
+            out.writeObject(sender);
+            out.writeObject(message);
+            out.writeObject(disappearing);
+            out.flush();
+
+            boolean temp = (boolean) in.readObject();
+            return temp;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public ArrayList<Message> getMessagesForUser(Conversation conversation, User user) {
-    	
-    	 try {
-             out.writeObject("Messenger.getMessagesForUser");
-             out.writeObject(conversation);
-             out.writeObject(user);
-             out.flush();
+        try {
+            out.writeObject("Messenger.getMessagesForUser");
+            out.writeObject(conversation);
+            out.writeObject(user);
+            out.flush();
 
-             ArrayList<Message> temp = (ArrayList<Message>) in.readObject();
-             return temp;
+            ArrayList<Message> temp = (ArrayList<Message>) in.readObject();
+            return temp;
 
-         } catch (Exception e) {
-             e.printStackTrace();
-             return null;
-         }	
-    	
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
-    
+
     public boolean editMessage(Conversation conversation, Message m, String content, User user) {
-    	
-    	try {
+        try {
             out.writeObject("Messenger.editMessage");
             out.writeObject(conversation);
             out.writeObject(m);
@@ -257,47 +281,40 @@ public class SharingClient {
 
             boolean temp = (boolean) in.readObject();
             return temp;
-
         } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
-    	
     }
-    
+
     public boolean deleteMessage(Conversation conversation, Message m, User current) {
-    	
-    	try {
-            out.writeObject("Messenger.editMessage");
+        try {
+            out.writeObject("Messenger.deleteMessage");
             out.writeObject(conversation);
             out.writeObject(m);
             out.writeObject(current);
-
             out.flush();
 
             boolean temp = (boolean) in.readObject();
             return temp;
-
         } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
-    	
     }
-    
-    public ArrayList<Store> getAllStoresForUser(User u) {
-    	try {
-    		out.writeObject("Store.getAllStoresForUser");
-    		out.writeObject(u);
-    		
-    		ArrayList<Store> temp = (ArrayList<Store>) in.readObject();
-    		return temp;
-    		
-    	} catch (Exception e) {
-    		e.printStackTrace();
-    		return null;
-    	}
-    	
+
+    public boolean existsUnreadMessagesForUser(User user) {
+        try {
+            out.writeObject("Messenger.existsUnreadMessagesForUser");
+            out.writeObject(user);
+            out.flush();
+
+            boolean temp = (boolean) in.readObject();
+            return temp;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public void stopConnection() {
@@ -312,40 +329,39 @@ public class SharingClient {
         }
     }
 
-/* USED FOR TESTING
-
     public static void main(String[] args) {
         SharingClient client = new SharingClient();
         if (!client.startConnection())
             return;
 
-       // client.newUserTest();
-        if (!client.signInTest())
+        //client.newUserTest();
+        User loggedUser = client.signInTest();
+        if (loggedUser == null)
             return;
 
-        ArrayList<User> temp = client.searchSellerByUser("a");
+        ArrayList<User> temp = client.searchSellerByUser("a", loggedUser);
         String[] options =  temp.stream().map(n -> n.getName()).toArray(String[]::new);
         Object sel = JOptionPane.showInputDialog(null, "Sellers:",
                 "Seller Search Results", JOptionPane.QUESTION_MESSAGE,
                 null, options, options[0]);
 
-        temp = client.searchCustomerByUser("a");
+        temp = client.searchCustomerByUser("a", loggedUser);
         options =  temp.stream().map(n -> n.getName()).toArray(String[]::new);
         sel = JOptionPane.showInputDialog(null, "Customers:",
                 "Customer Search Results", JOptionPane.QUESTION_MESSAGE,
                 null, options, options[0]);
 
-        temp = client.getCustomersByUser();
+        temp = client.getCustomersByUser(loggedUser);
         options =  temp.stream().map(n -> n.getName()).toArray(String[]::new);
         sel = JOptionPane.showInputDialog(null, "Customers:",
                 "Customer Search Results", JOptionPane.QUESTION_MESSAGE,
                 null, options, options[0]);
 
+        //should call this from an exit button
         client.stopConnection();
-    }    
- 
+    }
 
-    public boolean signInTest() {
+    public User signInTest() {
         String userID;
         String password;
 
@@ -362,7 +378,7 @@ public class SharingClient {
             password = passwordText.getText();
         } else {
             JOptionPane.showMessageDialog(null, "User cancelled, exiting program...", "Cancelled", JOptionPane.WARNING_MESSAGE);
-            return false;
+            return null;
         }
 
         User user = signIn(userID, password);
@@ -370,14 +386,13 @@ public class SharingClient {
         if (user == null) {
             JOptionPane.showMessageDialog(null, "Invalid user id or password",
                     "Login Error", JOptionPane.ERROR_MESSAGE);
-            return false;
         } else {
-            System.out.println(loggedUser.getName() + " logged in.");
-            return true;
+            System.out.println(user.getName() + " logged in.");
         }
+        return user;
     }
 
-   /* public boolean newUserTest() {
+    public boolean newUserTest() {
         String name;
         String emailAddress;
         String password;
@@ -410,12 +425,14 @@ public class SharingClient {
             return false;
         }
 
-        //boolean temp = newUser(name, emailAddress, password, storeName, userType);
-        //if (!temp)
+        User temp = newUser(name, emailAddress, password, storeName, userType);
+        if (temp == null) {
             JOptionPane.showMessageDialog(null, "User could not be created. Email is taken.",
                     "Create User Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
 
-        //return temp;
-    } */
+        return true;
+    }
 
 }
