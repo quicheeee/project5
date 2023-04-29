@@ -11,9 +11,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  * @author Amelia Williams, Meha Kavoori, Anish Puri, Tyler Barnett
  *
- * @version 04/10/2023
+ * @version 04/23/2023
  *
  */
+// user class implements serializable
 public class User implements Serializable {
     private String name; //the name of the user
     private String email; //the email address of the user
@@ -26,7 +27,7 @@ public class User implements Serializable {
     private static final long serialVersionUID = -5554757084812506737L;
     private static final Object staticUserLock = new Object();
 
-    //Constructor to create a user given their name, email, and password
+    // Constructor to create a user given their name, email, and password
     public User(String name, String email, String password){
         this.name = name;
         this.email = email;
@@ -35,42 +36,42 @@ public class User implements Serializable {
         filters = new ArrayList<String>();
     }
 
-    //returns the User's email
+    // returns the User's email
     public String getEmail() {
         return email;
     }
 
-    //sets the email field to the inputted string
+    // sets the email field to the inputted string
     public void setEmail(String email) {
         this.email = email;
     }
 
-    //gets the User's password
+    // gets the User's password
     public String getPassword() {
         return password;
     }
 
-    //sets the User's password
+    // sets the User's password
     public void setPassword(String password) {
         this.password = password;
     }
 
-    //returns the User's name
+    // returns the User's name
     public String getName() {
         return name;
     }
 
-    //returns an ArrayList of Users blocked by the given User
+    // returns an ArrayList of Users blocked by the given User
     public ArrayList<User> getBlockedUsers(){
         return blockedUsers;
     }
 
-    //sets the stored ArrayList of Users blocked by the given User to the inputted ArrayList
+    // sets the stored ArrayList of Users blocked by the given User to the inputted ArrayList
     public void setBlockedUsers(ArrayList<User> blockedUsers){
         this.blockedUsers = blockedUsers;
     }
 
-    //this method blocks an inputted user
+    // this method blocks an inputted user
     public void block(User user) {
         this.blockedUsers.add(user);
     }
@@ -110,7 +111,7 @@ public class User implements Serializable {
         return false;
     }
 
-    //this method is used to verify login information when a user signs into the application
+    // this method is used to verify login information when a user signs into the application
     public static User signIn (String email, String password) {
         CopyOnWriteArrayList<User> users = getUsers();
         for(User u: users) {
@@ -124,7 +125,7 @@ public class User implements Serializable {
         return null;
     }
 
-    //a static method used to identify a User object from the associated email address
+    // a static method used to identify a User object from the associated email address
     public static User findUserWithEmail(String email){
         try{
             CopyOnWriteArrayList<User> users = getUsers();
@@ -156,8 +157,8 @@ public class User implements Serializable {
         return results;
     }
 
-    //a static method that returns an arraylist of customers that are not blocked
-    //whose email address contains a search term inputted by the given sender
+    // a static method that returns an arraylist of customers that are not blocked
+    // whose email address contains a search term inputted by the given sender
     public static ArrayList<User> searchCustomerByUser(String search, User sender) {
         CopyOnWriteArrayList<User> users = getUsers();
         ArrayList<User> results = new ArrayList<User>();
@@ -172,7 +173,7 @@ public class User implements Serializable {
         return results;
     }
 
-    //a static method that returns an arraylist of customers that are not blocked by the given sender
+    // a static method that returns an arraylist of customers that are not blocked by the given sender
     public static ArrayList<User> getCustomersByUser(User sender) {
         CopyOnWriteArrayList<User> users = getUsers();
         ArrayList<User> results = new ArrayList<User>();
@@ -186,8 +187,8 @@ public class User implements Serializable {
         return results;
     }
 
-    //creates a new user when the appropriate fields are inputted and creates a customer or seller object
-    //and then writes the user to file for storage of information
+    // creates a new user when the appropriate fields are inputted and creates a customer or seller object
+    // and then writes the user to file for storage of information
     public static User newUser(String name, String emailAddress, String password, String storeName, int userType) {
         CopyOnWriteArrayList<User> users = User.getUsers();
         for(User u: users) {
@@ -215,7 +216,7 @@ public class User implements Serializable {
         User.writeUsers();
         return u;
     }
-
+    // method returns true seller and storename exist
     public static boolean addNewStore(Seller seller, String storeName) {
         try {
             User savedUser = findUserWithEmail(seller.getEmail());
@@ -230,7 +231,7 @@ public class User implements Serializable {
         return true;
     }
 
-    //given an ArrayList of Users, this method will write them to the file which stores them ("accounts.ser")
+    // given an ArrayList of Users, this method will write them to the file which stores them ("accounts.ser")
     private static void writeUsers(){
         try{
             File f = new File("accounts.ser");
@@ -248,7 +249,7 @@ public class User implements Serializable {
         }
     }
 
-    //this method returns an ArrayList of Users with all the users in the file "accounts.ser"
+    // this method returns an ArrayList of Users with all the users in the file "accounts.ser"
     public static CopyOnWriteArrayList<User> getUsers() {
         if (User.allUsers != null)
             return  User.allUsers;
@@ -295,7 +296,7 @@ public class User implements Serializable {
         return true;
     }
 
-    //this method deletes a user, removing them from the file "accounts.ser"
+    // this method deletes a user, removing them from the file "accounts.ser"
     public static boolean deleteUser(User u) {
         try {
             Messenger.deleteConversationsForUser(u);
@@ -310,7 +311,7 @@ public class User implements Serializable {
         }
         return true;
     }
-
+    // this method adds filer for given user's conversations
     public static boolean addFilterForUser(User user, String original, String replacement) {
         try {
             User savedUser = findUserWithEmail(user.getEmail());
