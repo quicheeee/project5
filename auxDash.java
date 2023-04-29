@@ -631,7 +631,7 @@ public class auxDash extends JComponent implements Runnable{
                 }
             }
             String message = JOptionPane.showInputDialog(null,
-                    "What message would you like to send?", "New Message", JOptionPane.OK_OPTION);
+                    "What message would you like to send?", "New Message", JOptionPane.PLAIN_MESSAGE);
             if (message == null) return;
 
             if (user instanceof Customer)
