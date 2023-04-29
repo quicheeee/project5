@@ -2,7 +2,7 @@
 
 # How to compile and run the Code.
 
-To run the code first you need to just download the files. Next import them in IntelliJ. Finally, run the file name "SharingServer.java" to start the server, and then run the file titled "auxDash.java" to run the main program.
+To run the code first you need to just download the files. Next import them in IntelliJ. Finally, run the file named "SharingServer.java" to start the server, and then run the file titled "auxDash.java" to run the main program.
 
 # Who submitted what
 
