@@ -5,12 +5,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.concurrent.CopyOnWriteArrayList;
-
+/**
+ * Class Messenger
+ * The messenger class represents the act of messaging.
+ * It takes User objects and adds or manipulates their messages.
+ *
+ * @author Amelia Williams, Meha Kavoori, Anish Puri, Tyler Barnett
+ * @version 04/28/2023
+ */
 public class Messenger {
 	private static final String FILENAME = "messages.ser";
 	private static CopyOnWriteArrayList<Conversation> conversations = null;
 	private static final Object staticMessengerLock = new Object();
-
+	// returns conversations
 	public static CopyOnWriteArrayList<Conversation> getConversations() {
 		if (Messenger.conversations != null)
 			return Messenger.conversations;
@@ -42,7 +49,7 @@ public class Messenger {
 		Messenger.conversations = new CopyOnWriteArrayList<>(temp);
 		return Messenger.conversations;
 	}
-
+	// sends new message to reciever from sender
 	public static boolean sendNewMessage(User sender, User receiver, String message, Boolean disappearing,
 									  		Customer customer, Store store) {
 		try {
@@ -63,7 +70,7 @@ public class Messenger {
 			return false;
 		}
 	}
-
+	// finds conversation between customer and seller
 	private static Conversation findConversation(Customer customer, Seller seller, Store store) {
 		CopyOnWriteArrayList<Conversation> temp = Messenger.getConversations();
 		for (Conversation conv : temp) {
@@ -72,7 +79,7 @@ public class Messenger {
 		}
 		return null;
 	}
-
+	// writes message to file
 	public static void writeMessages() {
 		try {
 			File f = new File(Messenger.FILENAME);
@@ -90,7 +97,7 @@ public class Messenger {
 			e.printStackTrace();
 		}
 	}
-
+	// gets user's conversations
 	public static ArrayList<Conversation> getConversationsForUser(User u) {
 		CopyOnWriteArrayList<Conversation> temp = Messenger.getConversations();
 		ArrayList<Conversation> results = new ArrayList<Conversation>();
@@ -138,14 +145,14 @@ public class Messenger {
 
 		return results;
 	}
-
+	// gets user's messages
 	public static ArrayList<Message> getMessagesForUser(Conversation conversation, User user) {
 		ArrayList<Message> temp =  conversation.getMessagesForUser(user);
 		writeMessages(); //to write the read flags
 		return temp;
 	}
 
-// void to boolean ?!
+	// edits user's message
 	public static boolean editMessage(Conversation conversation, Message m, String content, User user) {
 		
 		try {
@@ -158,7 +165,7 @@ public class Messenger {
 		}
 		
 	}
-
+	// deletes user's message
 	public static boolean deleteMessage(Conversation conversation, Message m, User current) {
 		
 		try {
@@ -170,7 +177,7 @@ public class Messenger {
 			return false;
 		}
 	}
-
+	// deletes user's conversation
 	public static void deleteConversationsForUser(User user) {
 		CopyOnWriteArrayList<Conversation> temp = Messenger.getConversations();
 		ArrayList<Conversation> removeList = new ArrayList<Conversation>();
@@ -185,7 +192,7 @@ public class Messenger {
 		}
 		writeMessages();
 	}
-
+	// checks for existing unread messages for user
 	public static boolean existsUnreadMessagesForUser(User user) {
 		ArrayList<Conversation> temp = Messenger.getConversationsForUser(user);
 		for (Conversation conversation : temp) {
@@ -200,7 +207,7 @@ public class Messenger {
 		}
 		return false;
 	}
-
+	// adds message to conversation
 	public static void addMessageToConversation(Conversation conversation, User sender, String message,
 												boolean disappearing) {
 		User receiver;
