@@ -527,7 +527,7 @@ public class auxDash extends JComponent implements Runnable{
 
             }
             String select3 = (String) JOptionPane.showInputDialog(null,
-                    String.format("Select which conversation you would like to import.%n%s", header), "Conversation Choices",
+                    String.format("Select which conversation you would like to import to.%n%s", header), "Conversation Choices",
                     JOptionPane.PLAIN_MESSAGE, null, list, list[0]);
             if(select3 == null){
                 return;

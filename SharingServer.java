@@ -30,7 +30,7 @@ public class SharingServer extends Thread {
     }
     // run method
     public void run() {
-        System.out.printf("Connection received from %s\n", socket);
+        //System.out.printf("Connection received from %s\n", socket);
 
         try {
             while (true) {
