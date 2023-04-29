@@ -7,7 +7,7 @@ import java.util.ArrayList;
  * The conversation class represents individual conversations sent between different users.
  *
  * @author Amelia Williams, Meha Kavoori, Anish Puri, Tyler Barnett
- * @version 04/10/2023
+ * @version 04/28/2023
  */
 public class Conversation implements Serializable {
     private boolean readCustomer;
