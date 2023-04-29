@@ -6,7 +6,7 @@ To run the code first you need to just download the files. Next import them in I
 
 # Who submitted what
 
-Meha Kavoori - Submitted Report on Brightspace. Amelia Williams - Submitted Vocareum workspace.
+Meha Kavoori - Submitted Report on Brightspace. Anish Puri - Submitted Vocareum workspace. Tyler Barnett - submitted presentation video.
 
 # Class Descriptions
 
