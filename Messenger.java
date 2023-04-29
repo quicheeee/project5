@@ -4,12 +4,21 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.concurrent.CopyOnWriteArrayList;
-
+/**
+ * Messenger Class
+ *
+ * This class represents a Messenger object. This class is
+ * used to edit and write the existing messages.
+ *
+ * @authoer Amelia Williams, Meha Kavoori, Anish Puri, Tyler Barnett
+ *
+ * @version 04/28/2023
+ */
 public class Messenger {
-	private static final String FILENAME = "messages.ser";
-	private static CopyOnWriteArrayList<Conversation> conversations = null;
+	private static final String FILENAME = "messages.ser"; // filename for file that holds messages
+	private static CopyOnWriteArrayList<Conversation> conversations = null; // copy on write arraylist of conversations
 	private static final Object staticMessengerLock = new Object();
-
+	// method returns conversations from list
 	public static CopyOnWriteArrayList<Conversation> getConversations() {
 		if (Messenger.conversations != null)
 			return Messenger.conversations;
@@ -41,7 +50,7 @@ public class Messenger {
 		Messenger.conversations = new CopyOnWriteArrayList<>(temp);
 		return Messenger.conversations;
 	}
-
+	// method allows for new message to be sent between sender and receiver
 	public static boolean sendNewMessage(User sender, User receiver, String message, Boolean disappearing,
 									  		Customer customer, Store store) {
 		try {
@@ -62,7 +71,7 @@ public class Messenger {
 			return false;
 		}
 	}
-
+	// method allows for conversation to be searched between customer and seller.
 	private static Conversation findConversation(Customer customer, Seller seller, Store store) {
 		CopyOnWriteArrayList<Conversation> temp = Messenger.getConversations();
 		for (Conversation conv : temp) {
@@ -71,7 +80,7 @@ public class Messenger {
 		}
 		return null;
 	}
-
+	// method allows for messages to be written to a file to they can be sent
 	public static void writeMessages() {
 		try {
 			File f = new File(Messenger.FILENAME);
@@ -89,7 +98,7 @@ public class Messenger {
 			e.printStackTrace();
 		}
 	}
-
+	// method returns list of conversations given the user
 	public static ArrayList<Conversation> getConversationsForUser(User u) {
 		
 		CopyOnWriteArrayList<Conversation> temp = Messenger.getConversations();
@@ -142,7 +151,7 @@ public class Messenger {
 
 		return results;
 	}
-
+	// method returns list of messages given tthe conversation and user
 	public static ArrayList<Message> getMessagesForUser(Conversation conversation, User user) {
 		Conversation savedConv = getSavedConversation(conversation);
 		if (savedConv == null) return null;
@@ -151,7 +160,7 @@ public class Messenger {
 		writeMessages(); //to write the read flags
 		return temp;
 	}
-
+	// method allows for individual strings within messages to be edited by the user who sent them
 	public static boolean editMessage(Conversation conversation, Message m, String content, User user) {
 		try {
 			Conversation savedConv = getSavedConversation(conversation);
@@ -170,7 +179,7 @@ public class Messenger {
 			return false;
 		}
 	}
-
+	// method returns conversation
 	private static Conversation getSavedConversation(Conversation conversation) {
 		CopyOnWriteArrayList<Conversation> all = getConversations();
 
@@ -180,7 +189,7 @@ public class Messenger {
 		Conversation savedConv = all.get(index);
 		return savedConv;
 	}
-
+	// method allows for message to be deleted given the message, conversation, and user
 	public static boolean deleteMessage(Conversation conversation, Message m, User current) {
 		try {
 			Conversation savedConv = getSavedConversation(conversation);
@@ -199,7 +208,7 @@ public class Messenger {
 			return false;
 		}
 	}
-
+	// method allows for conversation to be deleted given the user
 	public static void deleteConversationsForUser(User user) {
 		CopyOnWriteArrayList<Conversation> temp = Messenger.getConversations();
 		ArrayList<Conversation> removeList = new ArrayList<Conversation>();
@@ -229,7 +238,7 @@ public class Messenger {
 		}
 		return false;
 	}
-
+	// method allows for message to be added to a conversation given the user, conversation, message, and whether or not it is dissapearing
 	public static boolean addMessageToConversation(Conversation conversation, User sender, String message,
 													boolean disappearing) {
 		try {
