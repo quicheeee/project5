@@ -9,13 +9,24 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.io.*;
-
+/**
+ * Auxilary Dashboard
+ *
+ * This class contains the gui.
+ * Buttons and texts fields are pressed and filled out by the user
+ * in order to execute the funtionalities of the rest of the program.
+ *
+ * @author Amelia Williams, Meha Kavoori, Anish Puri, Tyler Barnett
+ *
+ * @version 04/10/2023
+ */
+// class impolements runnable
 public class auxDash extends JComponent implements Runnable{
     private static SharingClient client;
     private static JLabel newMessagesLabel;
     private static JFrame commonFrame;
     private static User loggedIn;
-
+    // main method
     public static void main(String[] args) {
         client = new SharingClient();
         if (!client.startConnection())
@@ -23,7 +34,7 @@ public class auxDash extends JComponent implements Runnable{
 
         SwingUtilities.invokeLater(new auxDash());
     }
-
+    // GUI menu for customer
     public static void customerMenu(User user){
         JFrame frame;
         frame = new JFrame("Customer Menu");
@@ -107,7 +118,7 @@ public class auxDash extends JComponent implements Runnable{
 
         commonFrame = frame;
     }
-
+    // GUI menu for seller
     public static void sellerMenu() {
         JFrame frame;
         frame = new JFrame("Seller Menu");
@@ -201,7 +212,7 @@ public class auxDash extends JComponent implements Runnable{
 
         commonFrame = frame;
     }
-
+    // GUI for siging in or creating account
     private static User signInOrCreateAccount(){
         boolean invalidinput = true;
         User user = null;
@@ -286,7 +297,7 @@ public class auxDash extends JComponent implements Runnable{
         }
         return user;
     }
-
+    // GUI for deleting account
     public static void deleteAccount(User user) {
 
         int de = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete your account?");
@@ -297,7 +308,7 @@ public class auxDash extends JComponent implements Runnable{
         }
 
     }
-
+    // GUI for messageing seller
     private static void sendNewMailCustomer(User user){
         String[] selectStoreOrSearchSeller= {"Select a store to message", "Search for a seller to message"};
         String select2 = (String) JOptionPane.showInputDialog(null,
@@ -341,7 +352,7 @@ public class auxDash extends JComponent implements Runnable{
             JOptionPane.showMessageDialog(null, "Uh Oh. Something went wrong.", "Error", JOptionPane.WARNING_MESSAGE);
         }
     }
-
+    // GUI for messaging customer
     private static void sendNewMailSeller(User user){
         String[] selectOrSearchCustomer= {"Select a customer to message", "Search for a customer to message"};
         String select2 = (String) JOptionPane.showInputDialog(null,
@@ -408,7 +419,7 @@ public class auxDash extends JComponent implements Runnable{
             JOptionPane.showMessageDialog(null, "Uh Oh. Something went wrong.", "Error", JOptionPane.WARNING_MESSAGE);
         }
     }
-
+    // method that returns index of conversation
     public static int getConversationIndex(Conversation conv, User u) {
         ArrayList<Conversation> conversations = client.getConversationsForUser(u);
         int indexToReturn = -1;
@@ -421,7 +432,7 @@ public class auxDash extends JComponent implements Runnable{
         return indexToReturn;
     }
 
-
+    // method exports selected conversation to seperate file
     public static void exportConversation(User user) {
         ArrayList<Conversation> convs = client.getConversationsForUser(user);
         if (convs.size() == 0)
@@ -500,7 +511,7 @@ public class auxDash extends JComponent implements Runnable{
             }
         }
     }
-
+    // imports conversaition from seperate file type
     public static void importConversation(User user) {
         ArrayList<Conversation> convs = client.getConversationsForUser(user);
         if (convs.size() == 0) {
@@ -541,7 +552,7 @@ public class auxDash extends JComponent implements Runnable{
         }
 
     }
-
+    // method reads file
     private static String readFile(String fileName) {
         try {
             BufferedReader bfr = new BufferedReader(new FileReader(fileName));
@@ -558,7 +569,7 @@ public class auxDash extends JComponent implements Runnable{
             return null;
         }
     }
-
+    // method adds filter to conversation
     public static void addFilters(User u) {
         ArrayList<String> filters = u.getFilters();
         
@@ -599,7 +610,7 @@ public class auxDash extends JComponent implements Runnable{
             
         //}
     }
-
+    // method allows for stores to be viewed and chosen
     private static void chooseStoreToMail(User user, ArrayList<Store> stores, Customer receiver){
         if (stores.size() == 0)
             JOptionPane.showMessageDialog(null, "No stores exist to message.", "Error", JOptionPane.WARNING_MESSAGE);
@@ -633,7 +644,7 @@ public class auxDash extends JComponent implements Runnable{
                     "Message sent", JOptionPane.INFORMATION_MESSAGE);
         }
     }
-
+    // method allows for conversations to be viewed
     private static void viewConversations(User u){
         ArrayList<Conversation> convs = client.getConversationsForUser(u);
         if (convs.size() == 0)
@@ -655,7 +666,7 @@ public class auxDash extends JComponent implements Runnable{
             }
         }
     }
-
+    // method allows for message menu to be viewed and updates
     private static void messageMenu(User current, Conversation conversation) {
         ArrayList<Message> messages = client.getMessagesForUser(conversation, current);
 
@@ -771,7 +782,7 @@ public class auxDash extends JComponent implements Runnable{
         frame.setLocationRelativeTo(commonFrame);
         frame.setVisible(true);
     }
-
+    // prints list of conversations
     private static int printConversationList(ArrayList<Conversation> conversations, User user){
         String header = String.format("%30s %30s %30s %20s\n", "Customer", "Seller", "Store", "New");
         ArrayList<String> list = new ArrayList<String>();
@@ -802,7 +813,7 @@ public class auxDash extends JComponent implements Runnable{
         }
         return -1;
     }
-
+    // method allows for user to block other users
     private static void blockUser(User user){
         ArrayList<User> users;
         String search = (String) JOptionPane.showInputDialog(null, "Please search user you want to block:", "Block User", JOptionPane.INFORMATION_MESSAGE);
@@ -837,7 +848,7 @@ public class auxDash extends JComponent implements Runnable{
             JOptionPane.showMessageDialog(null, "Block set!", "Block User", JOptionPane.INFORMATION_MESSAGE);
         }
     }
-
+    // gets new message label
     private static void refreshNewMessageLabel(User user) {
         if (client.existsUnreadMessagesForUser(user))
             newMessagesLabel.setText("<html><center>" + newMessagesLabel.getText()
@@ -845,7 +856,7 @@ public class auxDash extends JComponent implements Runnable{
         else
             newMessagesLabel.setText("Welcome " + user.getName());
     }
-    
+    // method adds store to seller
     private static void addStore(User seller) {
 
     	String storeName = "";
@@ -880,7 +891,7 @@ public class auxDash extends JComponent implements Runnable{
         }
 
     }
-
+    // auxDash constructor
     public auxDash(){
 
     }
