@@ -4,15 +4,25 @@ import javax.swing.*;
 import java.net.*;
 import java.io.*;
 import java.util.ArrayList;
-
+/**
+ * Sharing Client Class
+ *
+ * This class represents the individual user actively using the application.
+ * User port and hostname to connect to server
+ *
+ * @author Amelia Williams, Meha Kavoori, Anish Puri, Tyler Barnett
+ *
+ * @version 04/28/2023
+ *
+ */
 public class SharingClient {
     private Socket socket = null;
     private ObjectInputStream in = null;
     private ObjectOutputStream out = null;
-
+    // constructor
     public SharingClient() {
     }
-
+    // starts connection
     public boolean startConnection() {
         String hostName;
         int port = 3333;
@@ -34,7 +44,7 @@ public class SharingClient {
             return false;
         }
     }
-
+    // returs signed in user
     public User signIn(String userID, String password) {
         User loggedUser;
         try {
@@ -50,7 +60,7 @@ public class SharingClient {
         }
         return loggedUser;
     }
-
+    // returns list of sellers
     public ArrayList<User> searchSellerByUser(String search, User user) {
         try {
             out.writeObject("User.searchSellerByUser");
@@ -66,7 +76,7 @@ public class SharingClient {
             return null;
         }
     }
-
+    // returns list of customers
     public ArrayList<User> searchCustomerByUser(String search, User user) {
         try {
             out.writeObject("User.searchCustomerByUser");
@@ -82,7 +92,7 @@ public class SharingClient {
             return null;
         }
     }
-
+    // returns customer
     public ArrayList<User> getCustomersByUser(User user) {
         try {
             out.writeObject("User.getCustomersByUser");
@@ -97,7 +107,7 @@ public class SharingClient {
             return null;
         }
     }
-
+    // creates new user
     public User newUser(String name, String emailAddress, String password, String storeName, int userType) {
         try {
             out.writeObject("User.newUser");
@@ -116,7 +126,7 @@ public class SharingClient {
             return null;
         }
     }
-
+    // returns true if new store should be added 
     public boolean addNewStore(Seller seller, String storeName) {
         try {
             out.writeObject("User.addNewStore");
@@ -132,7 +142,7 @@ public class SharingClient {
             return false;
         }
     }
-
+    // returns true if user should be deleted
     public boolean deleteUser(User u) {
         try {
             out.writeObject("User.deleteUser");
@@ -147,7 +157,7 @@ public class SharingClient {
             return false;
         }
     }
-
+    // returns true if user should be blocked
     public boolean blockUser(User blocker, User blocked) {
         try {
             out.writeObject("User.blockUser");
@@ -163,7 +173,7 @@ public class SharingClient {
             return false;
         }
     }
-
+    // returns true if filter should be added
     public boolean addFilterForUser(User user, String original, String replacement) {
         if((original == null) || (replacement == null))
             throw new IllegalArgumentException("Invalid filter strings");
@@ -183,7 +193,7 @@ public class SharingClient {
             return false;
         }
     }
-
+    // returns all stores for given user
     public ArrayList<Store> getAllStoresForUser (User user) {
         try {
             out.writeObject("Store.getAllStoresForUser");
@@ -198,7 +208,7 @@ public class SharingClient {
             return null;
         }
     }
-
+    // returns true if message should be sent
     public boolean sendNewMessage(User sender, User receiver, String message, Boolean disappearing,
                                       Customer customer, Store store) {
         try {
@@ -219,7 +229,7 @@ public class SharingClient {
             return false;
         }
     }
-
+    // returns user conversation
     public ArrayList<Conversation> getConversationsForUser(User user) {
         try {
             out.writeObject("Messenger.getConversationsForUser");
@@ -234,7 +244,7 @@ public class SharingClient {
             return null;
         }
     }
-
+    // returns true if message should be added to conversation
     public boolean addMessageToConversation(Conversation conversation, User sender, String message,
                                                 boolean disappearing) {
         try {
@@ -253,7 +263,7 @@ public class SharingClient {
             return false;
         }
     }
-
+    // returns user messages
     public ArrayList<Message> getMessagesForUser(Conversation conversation, User user) {
         try {
             out.writeObject("Messenger.getMessagesForUser");
@@ -269,7 +279,7 @@ public class SharingClient {
             return null;
         }
     }
-
+    // returns true if message should be editted
     public boolean editMessage(Conversation conversation, Message m, String content, User user) {
         try {
             out.writeObject("Messenger.editMessage");
@@ -286,7 +296,7 @@ public class SharingClient {
             return false;
         }
     }
-
+    // returns true if message should be deleted
     public boolean deleteMessage(Conversation conversation, Message m, User current) {
         try {
             out.writeObject("Messenger.deleteMessage");
@@ -302,7 +312,7 @@ public class SharingClient {
             return false;
         }
     }
-
+    // returns true if there are unread messages
     public boolean existsUnreadMessagesForUser(User user) {
         try {
             out.writeObject("Messenger.existsUnreadMessagesForUser");
@@ -316,7 +326,7 @@ public class SharingClient {
             return false;
         }
     }
-
+    // cancels connection from server
     public void stopConnection() {
         try {
             out.writeObject("Exit");
@@ -328,7 +338,7 @@ public class SharingClient {
             e.printStackTrace();
         }
     }
-
+    // main method
     public static void main(String[] args) {
         SharingClient client = new SharingClient();
         if (!client.startConnection())
@@ -360,7 +370,7 @@ public class SharingClient {
         //should call this from an exit button
         client.stopConnection();
     }
-
+    // tests sign in
     public User signInTest() {
         String userID;
         String password;
@@ -391,7 +401,7 @@ public class SharingClient {
         }
         return user;
     }
-
+    // tests new user
     public boolean newUserTest() {
         String name;
         String emailAddress;
