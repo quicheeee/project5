@@ -5,7 +5,18 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.*;
 import java.util.ArrayList;
-
+/**
+ * Sharing Server
+ *
+ * This class represents the server users connect to.
+ * The server stores information by user.
+ *
+ * @author Amelia Williams, Meha Kavoori, Anish Puri, Tyler Barnett
+ *
+ * @version 04/23/2023
+ *
+ */
+// class constructor extends thread
 public class SharingServer extends Thread {
     private Socket socket;
     private ObjectOutputStream out;
@@ -17,7 +28,7 @@ public class SharingServer extends Thread {
         out.flush();
         in = new ObjectInputStream(this.socket.getInputStream());
     }
-
+    // run method
     public void run() {
         System.out.printf("Connection received from %s\n", socket);
 
@@ -57,7 +68,7 @@ public class SharingServer extends Thread {
            
         }
     }
-
+    // executes given the method name
     public void executeMethod(String method) throws IOException, ClassNotFoundException, InvocationTargetException,
                                                     IllegalAccessException {
 
@@ -84,7 +95,7 @@ public class SharingServer extends Thread {
         out.writeObject(result);
         out.flush();
     }
-
+    // writes results of searched seller to user
     public void searchSellerByUser() throws IOException, ClassNotFoundException {
         String search = (String) in.readObject();
         User user = (User) in.readObject();
@@ -95,7 +106,7 @@ public class SharingServer extends Thread {
         out.writeObject(results);
         out.flush();
     }
-
+    // writes results of searched customer to user
     public void searchCustomerByUser() throws IOException, ClassNotFoundException {
         String search = (String) in.readObject();
         User user = (User) in.readObject();
@@ -106,7 +117,7 @@ public class SharingServer extends Thread {
         out.writeObject(results);
         out.flush();
     }
-
+    // writes results of retrieved customer to user
     public void getCustomersByUser() throws IOException, ClassNotFoundException {
         User user = (User) in.readObject();
 
@@ -116,7 +127,7 @@ public class SharingServer extends Thread {
         out.writeObject(results);
         out.flush();
     }
-
+    // starts server
     public static void startServer() {
         try {
             //Port number will be 3333
@@ -132,7 +143,7 @@ public class SharingServer extends Thread {
             ex.printStackTrace();
         }
     }
-
+    // main method
     public static void main(String[] args) {
         //User.getUsers();
         SharingServer.startServer();
