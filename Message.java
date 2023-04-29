@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter;
  * It takes String objects and converts the text to Message objects which can be stored.
  *
  * @author Amelia Williams, Meha Kavoori, Anish Puri, Tyler Barnett
- * @version 04/10/2023
+ * @version 04/28/2023
  */
 // following class implements Serializabe and Comparable<Message> so that the messages can be compared
 public class Message implements Serializable {
