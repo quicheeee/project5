@@ -14,6 +14,7 @@ public class auxDash extends JComponent implements Runnable{
     private static SharingClient client;
     private static JLabel newMessagesLabel;
     private static JFrame commonFrame;
+    private static User loggedIn;
 
     public static void main(String[] args) {
         client = new SharingClient();
@@ -107,7 +108,7 @@ public class auxDash extends JComponent implements Runnable{
         commonFrame = frame;
     }
 
-    public static void sellerMenu(User user){
+    public static void sellerMenu() {
         JFrame frame;
         frame = new JFrame("Seller Menu");
         Container content = frame.getContentPane();
@@ -118,6 +119,7 @@ public class auxDash extends JComponent implements Runnable{
 
         JButton sendNewMsgButton = new JButton("Send a New Message");
         JButton viewConvosButton = new JButton("View Conversations");
+        JButton createStoreButton = new JButton("Create Store");
         JButton blockUserButton = new JButton ("Block User");
         JButton exportConvoButton = new JButton("Export Conversation");
         JButton importConvoButton = new JButton("Import Conversation");
@@ -129,51 +131,59 @@ public class auxDash extends JComponent implements Runnable{
             public void actionPerformed(ActionEvent e) {
                 if (e.getSource() == sendNewMsgButton) {
                     //frame.dispose();
-                    sendNewMailSeller(user);
+                    sendNewMailSeller(loggedIn);
                     //sellerMenu(user);
                 }
                 if (e.getSource() == viewConvosButton) {
                     //frame.dispose();
-                    viewConversations(user);
+                    viewConversations(loggedIn);
+                    //sellerMenu(user);
+                }
+                if (e.getSource() == createStoreButton) {
+                    //frame.dispose();
+                    addStore(loggedIn);
                     //sellerMenu(user);
                 }
                 if (e.getSource() == blockUserButton) {
                     //frame.dispose();
-                    blockUser(user);
+                    blockUser(loggedIn);
                     //sellerMenu(user);
                 }
                 if (e.getSource() == exportConvoButton) {
                     //frame.dispose();
-                    exportConversation(user);
+                    exportConversation(loggedIn);
                     //sellerMenu(user);
                 }
                 if (e.getSource() == importConvoButton) {
                     //frame.dispose();
-                    importConversation(user);
+                    importConversation(loggedIn);
                     //sellerMenu(user);
                 }
                 if (e.getSource() == deleteAccountButton) {
                     frame.dispose();
-                    deleteAccount(user);
+                    deleteAccount(loggedIn);
                     SwingUtilities.invokeLater(new auxDash());
                 }
                 if (e.getSource() == addFiltersButton) {
                     //frame.dispose();
-                    addFilters(user);
+                    addFilters(loggedIn);
                     //sellerMenu(user);
                 }
+                
+                refreshNewMessageLabel(loggedIn);
 
             }
         };
 
         newMessagesLabel = new JLabel();
         newMessagesLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        refreshNewMessageLabel(user);
+        refreshNewMessageLabel(loggedIn);
 
-        JPanel panel = new JPanel(new GridLayout(8, 1));
+        JPanel panel = new JPanel(new GridLayout(9, 1));
         panel.add(newMessagesLabel);
         sendNewMsgButton.addActionListener(sellMenuActionListener);
         viewConvosButton.addActionListener(sellMenuActionListener);
+        createStoreButton.addActionListener(sellMenuActionListener);
         blockUserButton.addActionListener(sellMenuActionListener);
         exportConvoButton.addActionListener(sellMenuActionListener);
         importConvoButton.addActionListener(sellMenuActionListener);
@@ -181,6 +191,7 @@ public class auxDash extends JComponent implements Runnable{
         addFiltersButton.addActionListener(sellMenuActionListener);
         panel.add(sendNewMsgButton);
         panel.add(viewConvosButton);
+        panel.add(createStoreButton);
         panel.add(blockUserButton);
         panel.add(exportConvoButton);
         panel.add(importConvoButton);
@@ -336,6 +347,8 @@ public class auxDash extends JComponent implements Runnable{
         String select2 = (String) JOptionPane.showInputDialog(null,
                 "Select what to do next", "Messenger", JOptionPane.PLAIN_MESSAGE,
                 null, selectOrSearchCustomer,null);
+        if (select2 == null) return;
+        
         if(select2.equals(selectOrSearchCustomer[0])){
             ArrayList<User> users = client.getCustomersByUser(user);
             if (users.size() == 0) {
@@ -349,6 +362,9 @@ public class auxDash extends JComponent implements Runnable{
                 String select3 = (String) JOptionPane.showInputDialog(null,
                         "Select which customer you would like to message.", "Customer Choices",
                         JOptionPane.PLAIN_MESSAGE, null, userOptions, null);
+                if (select3 == null) return;
+                
+                
                 ArrayList<Store> stores = ((Seller) user).getListOfStores();
                 int num = -1;
                 for(int i = 0; i < userOptions.length; i++){
@@ -362,6 +378,8 @@ public class auxDash extends JComponent implements Runnable{
             String customerSearch = (String) JOptionPane.showInputDialog(null,
                     "Please enter customer you are searching for:", "Customer Search",
                     JOptionPane.PLAIN_MESSAGE);
+            if (customerSearch == null) return;
+            
             ArrayList<User> users = client.searchCustomerByUser(customerSearch, user);
             if (users.size() == 0) {
                 JOptionPane.showMessageDialog(null, "No customers match", "Error", JOptionPane.WARNING_MESSAGE);
@@ -373,6 +391,8 @@ public class auxDash extends JComponent implements Runnable{
                 String select3 = (String) JOptionPane.showInputDialog(null,
                         "Select which customer you would like to message.", "Customer Choices",
                         JOptionPane.PLAIN_MESSAGE, null, userOptions, null);
+                if (select3 == null) return;
+                
                 int num = -1;
                 for(int i = 0; i < userOptions.length; i++){
                     if(userOptions[i].equals(select3)){
@@ -424,6 +444,7 @@ public class auxDash extends JComponent implements Runnable{
             if(select3 == null){
                 return;
             }
+            
             int indexInList = 0;
             for (int i = 0; i < list.length; i++) {
                 if (select3.equals(list[i])) {
@@ -432,12 +453,24 @@ public class auxDash extends JComponent implements Runnable{
             }
             Conversation conv = convs.get(indexInList);
             int conversationIndex = getConversationIndex(conv, user); // index where selected conversation is found
-            String filePathName = (String) JOptionPane.showInputDialog(null, "Please input a file path to write to ending in.csv");
+            
+            String filePathName = "";
+            
+            while (filePathName.trim().isEmpty()) {
+            	
+            	filePathName = (String) JOptionPane.showInputDialog(null, "Please input a file path to write to ending in.csv");
+            
+            	if (filePathName == null) {
+            		return;
+            	}
+            
+            }
+            
             ArrayList<String []> list2 = new ArrayList<String[]>();
             String[] headers = {"Timestamp", "Sender", "Receiver", "Message"};
             list2.add(headers);
             for (Message m : convs.get(conversationIndex).getMessages()) {
-                String[] msg = {m.getCreateDate(), m.getSender().getName(), m.getReceiver().getName(), m.getMessage()};
+                String[] msg = {m.getCreateDate(), m.getSender().getName(), m.getReceiver().getName(), user.applyFilters(m.getMessage())};
                 list2.add(msg);
             }
 
@@ -488,6 +521,7 @@ public class auxDash extends JComponent implements Runnable{
             if(select3 == null){
                 return;
             }
+            
             int indexInList = 0;
             for (int i = 0; i < list.length; i++) {
                 if (select3.equals(list[i])) {
@@ -527,25 +561,43 @@ public class auxDash extends JComponent implements Runnable{
 
     public static void addFilters(User u) {
         ArrayList<String> filters = u.getFilters();
+        
+        /*
         if (filters.size() == 0) {
             JOptionPane.showMessageDialog(null, "There are currently no filters");
         }
+        
+       
         String[] op1 = {"Add a new filter", "Go back"};
         String select = (String) JOptionPane.showInputDialog(null, "Select what to do next",
                 "Messenger", JOptionPane.PLAIN_MESSAGE, null, op1, null);
         if (select == null) return;
+        */
 
-        if (select.equals("Add a new filter")) {
+        //if (select.equals("Add a new filter")) {
+        
             String filterWord = (String) JOptionPane.showInputDialog("Enter what you want to filter", "");
+            if (filterWord == null)
+            	return;
+            
+            if (filterWord.isEmpty()) {
+            	JOptionPane.showMessageDialog(null, "Must enter a filter word", "Error", JOptionPane.WARNING_MESSAGE);
+            	return;
+            }
+            
             String replacementWord = (String) JOptionPane.showInputDialog("Enter the replacement word", "");
+            if (replacementWord == null)
+            	return;
+            
             if (replacementWord.equals("")) {
-                replacementWord = "*****";
+                replacementWord = "****";
             }
             client.addFilterForUser(u, filterWord, replacementWord);
             u.addFilter(filterWord, replacementWord);
 
             JOptionPane.showMessageDialog(null, "Filter has been added");
-        }
+            
+        //}
     }
 
     private static void chooseStoreToMail(User user, ArrayList<Store> stores, Customer receiver){
@@ -684,6 +736,9 @@ public class auxDash extends JComponent implements Runnable{
                                 String newMsg = (String) JOptionPane.showInputDialog(null,
                                         "What would you like this message to say?",
                                         "Edit Message", JOptionPane.INFORMATION_MESSAGE);
+                                if (newMsg == null)
+                                	return;
+                                
                                 client.editMessage(conversation, temp, newMsg.trim(), current);
                                 //Message newMsg2 = new Message(conversation.getCustomer(), conversation.getSeller(), newMsg.trim(), false);
                                 //messages.set(messages.indexOf(temp), newMsg2);
@@ -720,29 +775,12 @@ public class auxDash extends JComponent implements Runnable{
     private static int printConversationList(ArrayList<Conversation> conversations, User user){
         String header = String.format("%30s %30s %30s %20s\n", "Customer", "Seller", "Store", "New");
         ArrayList<String> list = new ArrayList<String>();
-        boolean sentinel;
-       
         
-        ArrayList<User> blocked = user.getBlockedUsers();
-
         for (int i = 0; i < conversations.size(); i++) {
         	
-        	sentinel = true;
-        	String currCust = conversations.get(i).getCustomer().getName();
-        	String currSell = conversations.get(i).getSeller().getName();
-        	
-        	
-        	for(int j = 0; j < blocked.size(); j ++) {
-        		
-        		if (currCust.equals(blocked.get(j).getName()) || currSell.equals(blocked.get(j).getName()))
-        			sentinel = false;
-        	}
-        	
-        	if (sentinel) {
-        		list.add(String.format (" %30s %30s %30s %3s\n", conversations.get(i).getCustomer().getName(),
-        				conversations.get(i).getSeller().getName(), conversations.get(i).getStore().getStoreName(),
-        				conversations.get(i).hasUserRead(user) ? "N" : "Y"));
-        	}
+        	list.add(String.format (" %30s %30s %30s %3s\n", conversations.get(i).getCustomer().getName(),
+        			conversations.get(i).getSeller().getName(), conversations.get(i).getStore().getStoreName(),
+        			conversations.get(i).hasUserRead(user) ? "N" : "Y"));
 
         }
         
@@ -789,7 +827,7 @@ public class auxDash extends JComponent implements Runnable{
             }
             int choice = -1;
             for(int i = 0; i < userList.length; i++){
-                if(userList[i].equals(users.get(i).getName())){
+                if(userList[i].equals(u)){
                     choice = i;
                 }
             }
@@ -807,19 +845,38 @@ public class auxDash extends JComponent implements Runnable{
         else
             newMessagesLabel.setText("Welcome " + user.getName());
     }
+    
+    private static void addStore(User seller) {
+
+    	String storeName = "";
+    	
+    	while (storeName.trim().equals("")) {
+    		storeName = (String) JOptionPane.showInputDialog(null, "What would you like your store to be named?", "Create Store", JOptionPane.INFORMATION_MESSAGE);
+        
+    		if (storeName == null)
+    			return;
+        }
+        
+    	if(client.addNewStore((Seller) seller, storeName.trim())) {
+    		JOptionPane.showMessageDialog(null, "Store created!", "Create Store", JOptionPane.INFORMATION_MESSAGE);
+    		loggedIn = client.signIn(loggedIn.getEmail(), loggedIn.getPassword());
+    	} else {
+    		JOptionPane.showMessageDialog(null, "Store name taken!", "Create Store", JOptionPane.WARNING_MESSAGE);
+        }
+    	
+    }
 
     @Override
     public void run() {
-        User user = null;
-        while(user == null) {
+        
         JOptionPane.showMessageDialog(null, "Welcome to the messaging application!",
                 "Messenger", JOptionPane.INFORMATION_MESSAGE);
-        user = signInOrCreateAccount();
-        }
-        if(user instanceof Customer){
-            customerMenu(user);
-        } else if(user instanceof Seller){
-            sellerMenu(user);
+        loggedIn = signInOrCreateAccount();
+        
+        if(loggedIn instanceof Customer){
+            customerMenu(loggedIn);
+        } else if(loggedIn instanceof Seller){
+            sellerMenu();
         }
 
     }
